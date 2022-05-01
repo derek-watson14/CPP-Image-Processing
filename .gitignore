@@ -1,0 +1,5 @@
+._*
+*.exe
+/sample_images
+*.bmp
+!sample.bmp
