@@ -234,10 +234,6 @@ bool write_image(string filename, const vector<vector<Pixel>>& image)
 //***************************************************************************************************//
 
 
-//
-// YOUR FUNCTION DEFINITIONS HERE
-//
-
 const int PROCESS_COUNT = 10;
 const string PROCESSES [PROCESS_COUNT] = {
     "Vignette", 
@@ -252,6 +248,11 @@ const string PROCESSES [PROCESS_COUNT] = {
     "Black, white, red, green, blue"
 };
 
+/**
+ * Apply vignette to image
+ * @param image Vector of vector of pixels making up the image
+ * @return Vector of vector of pixels making up the image
+ */
 vector<vector<Pixel>> process_1(const vector<vector<Pixel>>& image) {
     int num_rows = image.size();
     int num_columns = image[0].size();
@@ -281,6 +282,13 @@ vector<vector<Pixel>> process_1(const vector<vector<Pixel>>& image) {
     return output_image;
 }
 
+
+/**
+ * Apply clarendon to image
+ * @param image Vector of vector of pixels making up the image
+ * @param scaling_factor double between 0-1 represnting intensity of effect
+ * @return Vector of vector of pixels making up the image
+ */
 vector<vector<Pixel>> process_2(const vector<vector<Pixel>>& image, double scaling_factor) {
     int num_rows = image.size();
     int num_columns = image[0].size();
@@ -324,16 +332,74 @@ vector<vector<Pixel>> process_2(const vector<vector<Pixel>>& image, double scali
     return output_image;
 }
 
+
+/**
+ * Apply greyscale to image
+ * @param image Vector of vector of pixels making up the image
+ * @return Vector of vector of pixels making up the image
+ */
 vector<vector<Pixel>> process_3(const vector<vector<Pixel>>& image) {
-    return image;
+    int num_rows = image.size();
+    int num_columns = image[0].size();
+    vector<vector<Pixel>> output_image(num_rows, vector<Pixel>(num_columns));
+
+    for (int row = 0; row < num_rows; row++)
+    {
+        for (int col = 0; col < num_columns; col++)
+        {
+            double blue_value = image[row][col].blue;
+            double green_value = image[row][col].green;
+            double red_value = image[row][col].red;
+
+            // Average those values to get the grey value
+            double gray_value = (blue_value + green_value + red_value) / 3;
+
+
+            // Assign and set new pixel
+            Pixel new_pixel;
+            new_pixel.blue = gray_value;
+            new_pixel.green = gray_value;
+            new_pixel.red = gray_value;
+            output_image[row][col] = new_pixel;
+        }
+    }
+
+    return output_image;
 }
 
+
+/**
+ * Apply 90 degree rotation to image
+ * @param image Vector of vector of pixels making up the image
+ * @return Vector of vector of pixels making up the image
+ */
 vector<vector<Pixel>> process_4(const vector<vector<Pixel>>& image) {
-    return image;
+    int num_rows = image.size();
+    int num_columns = image[0].size();
+    vector<vector<Pixel>> output_image(num_columns, vector<Pixel>(num_rows));
+
+    for (int row = 0; row < num_rows; row++)
+    {
+        for (int col = 0; col < num_columns; col++)
+        {
+            output_image[col][(num_rows-1) - row] = image[row][col];
+        }
+    }
+
+    return output_image;
 }
 
 vector<vector<Pixel>> process_5(const vector<vector<Pixel>>& image, int number) {
-    return image;
+    int num_rows = image.size();
+    int num_columns = image[0].size();
+    vector<vector<Pixel>> output_image = image;
+
+    while (number > 0) 
+    {
+        output_image = process_4(output_image);
+        number--;
+    }
+    return output_image;
 }
 
 vector<vector<Pixel>> process_6(const vector<vector<Pixel>>& image, int x_scale, int y_scale) {
