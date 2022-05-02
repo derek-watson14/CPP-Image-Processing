@@ -237,6 +237,20 @@ bool write_image(string filename, const vector<vector<Pixel>>& image)
 //
 // YOUR FUNCTION DEFINITIONS HERE
 //
+
+const string PROCESSES [10] = {
+    "Vignette", 
+    "Clarendon", 
+    "Grayscale", 
+    "Rotate 90 degrees", 
+    "Rotate multiple 90 degrees", 
+    "Enlarge", 
+    "High contrast", 
+    "Lighten", 
+    "Darken", 
+    "Black, white, red, green, blue"
+};
+
 vector<vector<Pixel>> process_1(const vector<vector<Pixel>>& image) {
     return image;
 }
@@ -275,14 +289,130 @@ vector<vector<Pixel>> process_9(const vector<vector<Pixel>>& image, double scali
 
 vector<vector<Pixel>> process_10(const vector<vector<Pixel>>& image) {
     return image;
-} 
+}
+
+/**
+ * Print user menu for image processing application
+ * @param filename Current BMP file to work on
+ * @return None
+ */
+void print_menu(string in_filename) {
+    int menu_num = 0;
+    cout << "IMAGE PROCESSING MENU" << endl
+        << menu_num << ") Change image (current: " << in_filename << ")" << endl;
+
+    for (const string &PROCESS : PROCESSES) {
+        menu_num++;
+        cout << menu_num << ") " << PROCESS << endl;
+    }
+    
+    cout << endl << "Enter menu selection (Q to quit): ";
+}
+
+
+/**
+ * Print user menu for image processing application
+ * @param filename Current BMP file to work on
+ * @return None
+ */
+void execute_selection(string* in_filename, int selection) {
+    string out_filename;
+
+    if (selection == 0) {
+        cout << "Change image selected" << endl;
+        cout << "Enter new input BMP filename" << endl;
+        cin >> *in_filename;
+        cout << "Sucessfully changed input image!" << endl;
+        return;
+    } else {
+        cout << PROCESSES[selection] << " selected" << endl
+             << "Enter output BMP filename: ";
+        cin >> out_filename;
+        vector<vector<Pixel>> original = read_image(*in_filename);
+        vector<vector<Pixel>> modified;
+
+        double scaling_factor;
+        switch(selection) {
+            case 1:
+                modified = process_1(original);
+                break;
+            case 2:
+                cout << "Enter scaling factor: ";
+                cin >> scaling_factor;
+                modified = process_2(original, scaling_factor);
+                break;
+            case 3:
+                modified = process_3(original);
+                break;
+            case 4:
+                modified = process_4(original);
+                break;
+            case 5:
+                int rotations;
+                cout << "Enter number of 90 degree rotations: ";
+                cin >> rotations;
+                modified = process_5(original, rotations);
+                break;
+            case 6:
+                int x_scale, y_scale;
+                cout << "Enter X scale: ";
+                cin >> x_scale;
+                cout << "Enter Y scale: ";
+                cin >> y_scale;
+                modified = process_6(original, x_scale, y_scale);
+                break;
+            case 7:
+                modified = process_7(original);
+                break;
+            case 8:
+                cout << "Enter scaling factor: ";
+                cin >> scaling_factor;
+                modified = process_8(original, scaling_factor);
+                break;
+            case 9:
+                cout << "Enter scaling factor: ";
+                cin >> scaling_factor;
+                modified = process_9(original, scaling_factor);
+                break;
+            case 10:
+                modified = process_10(original);
+                break;   
+        }
+
+        write_image(out_filename, modified);
+        cout << "Successfully applied " << "\"" << PROCESSES[selection] << "\"" << " effect to image!" << endl << endl;
+        return;
+    }
+}
 
 int main()
 {
+    cout << "CSPB 1300 Image Processing Application" << endl;
     
-    //
-    // YOUR CODE HERE
-    //
+    string in_filename;
+    cout << "Enter input BMP filename: ";
+    cin >> in_filename;
+    cout << endl;
+
+
+    print_menu(in_filename);
+    int selection;
+    bool done = false;
+    while (!done)
+    {
+        cin >> selection;
+        if (cin.fail())
+        {
+            cout << "Thank you for using my program!" << endl
+                 << "Quitting..." << endl << endl;
+            done = true;
+        }
+        else
+        {
+            execute_selection(&in_filename, selection);
+            print_menu(in_filename);
+        }
+    }
 
     return 0;
 }
