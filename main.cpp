@@ -253,11 +253,75 @@ const string PROCESSES [PROCESS_COUNT] = {
 };
 
 vector<vector<Pixel>> process_1(const vector<vector<Pixel>>& image) {
-    return image;
+    int num_rows = image.size();
+    int num_columns = image[0].size();
+    vector<vector<Pixel>> output_image(num_rows, vector<Pixel>(num_columns));
+
+    for (int row = 0; row < num_rows; row++)
+    {
+        for (int col = 0; col < num_columns; col++)
+        {
+            double blue_value = image[row][col].blue;
+            double green_value = image[row][col].green;
+            double red_value = image[row][col].red;
+
+            // Find distance to center
+            double distance = sqrt(pow((col - num_columns/2), 2) + pow((row - num_rows/2), 2));
+            double scaling_factor = (num_rows - distance) / num_rows;
+
+            // Assign and set new pixel
+            Pixel new_pixel;
+            new_pixel.blue = round(blue_value * scaling_factor);
+            new_pixel.green = round(green_value * scaling_factor);
+            new_pixel.red = round(red_value * scaling_factor);
+            output_image[row][col] = new_pixel;
+        }
+    }
+
+    return output_image;
 }
 
 vector<vector<Pixel>> process_2(const vector<vector<Pixel>>& image, double scaling_factor) {
-    return image;
+    int num_rows = image.size();
+    int num_columns = image[0].size();
+    vector<vector<Pixel>> output_image(num_rows, vector<Pixel>(num_columns));
+
+    for (int row = 0; row < num_rows; row++)
+    {
+        for (int col = 0; col < num_columns; col++)
+        {
+            double blue_value = image[row][col].blue;
+            double green_value = image[row][col].green;
+            double red_value = image[row][col].red;
+
+            double average_value = (blue_value + green_value + red_value) / 3;
+            
+            Pixel new_pixel;
+            if (average_value >= 170)
+            {
+                new_pixel.red = round(255 - (255 - blue_value)*scaling_factor);
+                new_pixel.green = round(255 - (255 - green_value)*scaling_factor);
+                new_pixel.blue =  round(255 - (255 - red_value)*scaling_factor);
+            }
+            else if (average_value < 90)
+            {
+                new_pixel.red = red_value*scaling_factor;
+                new_pixel.green = green_value*scaling_factor;
+                new_pixel.blue =  blue_value*scaling_factor;
+            }
+            else 
+            {
+                new_pixel.red = red_value;
+                new_pixel.green = green_value;
+                new_pixel.blue =  blue_value;
+            }
+
+            output_image[row][col] = new_pixel;
+        }
+    }
+
+    // return output_img;
+    return output_image;
 }
 
 vector<vector<Pixel>> process_3(const vector<vector<Pixel>>& image) {
@@ -371,7 +435,7 @@ void execute_selection(string* in_filename, int selection) {
         }
 
 
-        cout << PROCESSES[selection] << " selected" << endl
+        cout << PROCESSES[selection - 1] << " selected" << endl
              << "Enter output BMP filename: ";
         cin >> out_filename;
 
@@ -439,9 +503,7 @@ void execute_selection(string* in_filename, int selection) {
             cout << endl << "Error processing image, check output file and try again." << endl;
             return;
         }
-        
-        write_image(out_filename, modified);
-        cout << "Successfully applied " << "\"" << PROCESSES[selection] << "\"" << " effect to image!" << endl << endl;
+        cout << "Successfully applied " << "\"" << PROCESSES[selection - 1] << "\"" << " effect to image!" << endl << endl;
         return;    
     }
     else 
