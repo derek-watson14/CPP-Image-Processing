@@ -21,6 +21,8 @@ PLEASE FILL OUT THIS SECTION PRIOR TO SUBMISSION
 #include <vector>
 #include <fstream>
 #include <cmath>
+#include <algorithm>
+#include <iomanip>
 using namespace std;
 
 //***************************************************************************************************//
@@ -248,33 +250,34 @@ const string PROCESSES [PROCESS_COUNT] = {
     "Black, white, red, green, blue"
 };
 
+
 /**
  * Apply vignette to image
  * @param image Vector of vector of pixels making up the image
  * @return Vector of vector of pixels making up the image
  */
 vector<vector<Pixel>> process_1(const vector<vector<Pixel>>& image) {
-    int num_rows = image.size();
-    int num_columns = image[0].size();
-    vector<vector<Pixel>> output_image(num_rows, vector<Pixel>(num_columns));
+    double height = image.size();
+    double width = image[0].size();
+    vector<vector<Pixel>> output_image(height, vector<Pixel>(width));
 
-    for (int row = 0; row < num_rows; row++)
+    for (int row = 0; row < height; row++)
     {
-        for (int col = 0; col < num_columns; col++)
+        for (int col = 0; col < width; col++)
         {
-            double blue_value = image[row][col].blue;
-            double green_value = image[row][col].green;
             double red_value = image[row][col].red;
+            double green_value = image[row][col].green;
+            double blue_value = image[row][col].blue;
 
-            // Find distance to center
-            double distance = sqrt(pow((col - num_columns/2), 2) + pow((row - num_rows/2), 2));
-            double scaling_factor = (num_rows - distance) / num_rows;
 
-            // Assign and set new pixel
+            double distance = sqrt(pow((col - width/2), 2) + pow((row - height/2), 2));
+            double scaling_factor = (height - distance) / height;
+
+
             Pixel new_pixel;
-            new_pixel.blue = round(blue_value * scaling_factor);
-            new_pixel.green = round(green_value * scaling_factor);
             new_pixel.red = round(red_value * scaling_factor);
+            new_pixel.green = round(green_value * scaling_factor);
+            new_pixel.blue = round(blue_value * scaling_factor);
             output_image[row][col] = new_pixel;
         }
     }
@@ -290,17 +293,17 @@ vector<vector<Pixel>> process_1(const vector<vector<Pixel>>& image) {
  * @return Vector of vector of pixels making up the image
  */
 vector<vector<Pixel>> process_2(const vector<vector<Pixel>>& image, double scaling_factor) {
-    int num_rows = image.size();
-    int num_columns = image[0].size();
-    vector<vector<Pixel>> output_image(num_rows, vector<Pixel>(num_columns));
+    double height = image.size();
+    double width = image[0].size();
+    vector<vector<Pixel>> output_image(height, vector<Pixel>(width));
 
-    for (int row = 0; row < num_rows; row++)
+    for (int row = 0; row < height; row++)
     {
-        for (int col = 0; col < num_columns; col++)
+        for (int col = 0; col < width; col++)
         {
-            double blue_value = image[row][col].blue;
-            double green_value = image[row][col].green;
             double red_value = image[row][col].red;
+            double green_value = image[row][col].green;
+            double blue_value = image[row][col].blue;
 
             double average_value = (blue_value + green_value + red_value) / 3;
             
@@ -339,27 +342,26 @@ vector<vector<Pixel>> process_2(const vector<vector<Pixel>>& image, double scali
  * @return Vector of vector of pixels making up the image
  */
 vector<vector<Pixel>> process_3(const vector<vector<Pixel>>& image) {
-    int num_rows = image.size();
-    int num_columns = image[0].size();
-    vector<vector<Pixel>> output_image(num_rows, vector<Pixel>(num_columns));
+    double height = image.size();
+    double width = image[0].size();
+    vector<vector<Pixel>> output_image(height, vector<Pixel>(width));
 
-    for (int row = 0; row < num_rows; row++)
+    for (int row = 0; row < height; row++)
     {
-        for (int col = 0; col < num_columns; col++)
+        for (int col = 0; col < width; col++)
         {
-            double blue_value = image[row][col].blue;
-            double green_value = image[row][col].green;
             double red_value = image[row][col].red;
+            double green_value = image[row][col].green;
+            double blue_value = image[row][col].blue;
 
-            // Average those values to get the grey value
+
             double gray_value = (blue_value + green_value + red_value) / 3;
 
 
-            // Assign and set new pixel
             Pixel new_pixel;
-            new_pixel.blue = gray_value;
-            new_pixel.green = gray_value;
             new_pixel.red = gray_value;
+            new_pixel.green = gray_value;
+            new_pixel.blue = gray_value;
             output_image[row][col] = new_pixel;
         }
     }
@@ -374,24 +376,31 @@ vector<vector<Pixel>> process_3(const vector<vector<Pixel>>& image) {
  * @return Vector of vector of pixels making up the image
  */
 vector<vector<Pixel>> process_4(const vector<vector<Pixel>>& image) {
-    int num_rows = image.size();
-    int num_columns = image[0].size();
-    vector<vector<Pixel>> output_image(num_columns, vector<Pixel>(num_rows));
+    double height = image.size();
+    double width = image[0].size();
+    vector<vector<Pixel>> output_image(width, vector<Pixel>(height));
 
-    for (int row = 0; row < num_rows; row++)
+    for (int row = 0; row < height; row++)
     {
-        for (int col = 0; col < num_columns; col++)
+        for (int col = 0; col < width; col++)
         {
-            output_image[col][(num_rows-1) - row] = image[row][col];
+            output_image[col][(height-1) - row] = image[row][col];
         }
     }
 
     return output_image;
 }
 
+
+/**
+ * Apply 90 degree rotation to image multiple times
+ * @param image Vector of vector of pixels making up the image
+ * @param number Number of times the image should be rotated 90 degrees
+ * @return Vector of vector of pixels making up the image
+ */
 vector<vector<Pixel>> process_5(const vector<vector<Pixel>>& image, int number) {
-    int num_rows = image.size();
-    int num_columns = image[0].size();
+    double height = image.size();
+    double width = image[0].size();
     vector<vector<Pixel>> output_image = image;
 
     while (number > 0) 
@@ -402,25 +411,272 @@ vector<vector<Pixel>> process_5(const vector<vector<Pixel>>& image, int number) 
     return output_image;
 }
 
+
+/**
+ * Enlarge image in x and y direction
+ * @param image Vector of vector of pixels making up the image
+ * @param x_scale Amount longer the image should be on x axis
+ * @param y_scale Amount longer the image should be on y axis
+ * @return Vector of vector of pixels making up the image
+ */
 vector<vector<Pixel>> process_6(const vector<vector<Pixel>>& image, int x_scale, int y_scale) {
-    return image;
+    double height = image.size();
+    double width = image[0].size();
+    vector<vector<Pixel>> output_image(height * y_scale, vector<Pixel>(width * x_scale));
+
+    for (int row = 0; row < round(height * y_scale); row++)
+    {
+        for (int col = 0; col < round(width * x_scale); col++)
+        {
+            Pixel new_pixel;
+            new_pixel.red = image[round(row/y_scale)][round(col/x_scale)].red;
+            new_pixel.green = image[round(row/y_scale)][round(col/x_scale)].green;
+            new_pixel.blue = image[round(row/y_scale)][round(col/x_scale)].blue;
+
+            output_image[row][col] = new_pixel;
+        }
+    }
+
+    return output_image;
 }
 
+/**
+ * Convert image to high contrast (black and white only)
+ * @param image Vector of vector of pixels making up the image
+ * @return Vector of vector of pixels making up the image
+ */
 vector<vector<Pixel>> process_7(const vector<vector<Pixel>>& image) {
-    return image;
+    double height = image.size();
+    double width = image[0].size();
+    vector<vector<Pixel>> output_image(height, vector<Pixel>(width));
+
+    for (int row = 0; row < height; row++)
+    {
+        for (int col = 0; col < width; col++)
+        {
+            double red_value = image[row][col].red;
+            double green_value = image[row][col].green;
+            double blue_value = image[row][col].blue;
+
+            double gray_value = (red_value + green_value + blue_value) / 3;
+
+            Pixel new_pixel;
+            if (gray_value >= 255/2) 
+            {
+                new_pixel.red = 255;
+                new_pixel.green = 255;
+                new_pixel.blue = 255;
+            }
+            else 
+            {
+                new_pixel.red = 0;
+                new_pixel.green = 0;
+                new_pixel.blue = 0;
+            }
+
+
+            output_image[row][col] = new_pixel;
+        }
+    }
+
+    return output_image;
 }
 
+
+/**
+ * Lightens image
+ * @param image Vector of vector of pixels making up the image
+ * @param scaling_factor Amount to lighten image
+ * @return Vector of vector of pixels making up the image
+ */
 vector<vector<Pixel>> process_8(const vector<vector<Pixel>>& image, double scaling_factor) {
-    return image;
+    double height = image.size();
+    double width = image[0].size();
+    vector<vector<Pixel>> output_image(height, vector<Pixel>(width));
+
+    for (int row = 0; row < height; row++)
+    {
+        for (int col = 0; col < width; col++)
+        {
+            double red_value = image[row][col].red;
+            double green_value = image[row][col].green;
+            double blue_value = image[row][col].blue;
+
+            Pixel new_pixel;
+            new_pixel.red = round(255 - (255 - red_value) * scaling_factor);
+            new_pixel.green = round(255 - (255 - green_value) * scaling_factor);
+            new_pixel.blue = round(255 - (255 - blue_value) * scaling_factor);
+            output_image[row][col] = new_pixel;
+        }
+    }
+
+    return output_image;
 }
 
+
+/**
+ * Darkens image
+ * @param image Vector of vector of pixels making up the image
+ * @param scaling_factor Amount to darken image
+ * @return Vector of vector of pixels making up the image
+ */
 vector<vector<Pixel>> process_9(const vector<vector<Pixel>>& image, double scaling_factor) {
-    return image;
+    double height = image.size();
+    double width = image[0].size();
+    vector<vector<Pixel>> output_image(height, vector<Pixel>(width));
+
+    for (int row = 0; row < height; row++)
+    {
+        for (int col = 0; col < width; col++)
+        {
+            double red_value = image[row][col].red;
+            double green_value = image[row][col].green;
+            double blue_value = image[row][col].blue;
+
+            Pixel new_pixel;
+            new_pixel.red = round(red_value * scaling_factor);
+            new_pixel.green = round(green_value * scaling_factor);
+            new_pixel.blue = round(blue_value * scaling_factor);
+            output_image[row][col] = new_pixel;
+        }
+    }
+
+    return output_image;
 }
 
+
+/**
+ * Converts to only black, white, red, blue and green
+ * @param image Vector of vector of pixels making up the image
+ * @return Vector of vector of pixels making up the image
+ */
 vector<vector<Pixel>> process_10(const vector<vector<Pixel>>& image) {
-    return image;
+    double height = image.size();
+    double width = image[0].size();
+    vector<vector<Pixel>> output_image(height, vector<Pixel>(width));
+
+    for (int row = 0; row < height; row++)
+    {
+        for (int col = 0; col < width; col++)
+        {
+            double red_value = image[row][col].red;
+            double green_value = image[row][col].green;
+            double blue_value = image[row][col].blue;
+            double max_color = max({red_value, green_value, blue_value});
+
+            Pixel new_pixel;
+            if ((red_value + green_value + blue_value) >= 550)
+            {
+                new_pixel.red = 255;
+                new_pixel.green = 255;
+                new_pixel.blue = 255;
+            }
+            else if ((red_value + green_value + blue_value) <= 150)
+            {
+                new_pixel.red = 0;
+                new_pixel.green = 0;
+                new_pixel.blue = 0;
+            }
+            else if (max_color == red_value)
+            {
+                new_pixel.red = 255;
+                new_pixel.green = 0;
+                new_pixel.blue = 0;
+            }
+            else if (max_color == green_value)
+            {
+                new_pixel.red = 0;
+                new_pixel.green = 255;
+                new_pixel.blue = 0;
+            }
+            else
+            {
+                new_pixel.red = 0;
+                new_pixel.green = 0;
+                new_pixel.blue = 255;
+            }
+
+            output_image[row][col] = new_pixel;
+        }
+    }
+
+    return output_image;
 }
+
+
+/**
+ * Print pixel values of an image in an organized format
+ * @param image Vector of vector of pixels making up the image
+ * @return None
+ */
+void print_pixel_values(const vector<vector<Pixel>>& image ) {
+    for (int row = 0; row < image.size(); row++)
+    {
+        for (int col = 0; col < image[0].size(); col++)
+        {
+            cout << setw(3) << image[row][col].red << " ";
+            cout << setw(3) << image[row][col].green << " ";
+            cout << setw(3) << image[row][col].blue << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+
+/**
+ * Test each process on tiny "image", printing resulting values
+ * @return None
+ */
+void test() {
+    vector<vector<Pixel>> tiny =
+    {
+        {{  0,  5, 10},{ 15, 20, 25},{ 30, 35, 40},{ 45, 50, 55}},
+        {{ 60, 65, 70},{ 75, 80, 85},{ 90, 95,100},{105,110,115}},
+        {{120,125,130},{135,140,145},{150,155,160},{165,170,175}}
+    };
+
+    vector<vector<Pixel>> p1 = process_1(tiny);
+    cout << "Process 1 Values:" << endl;
+    print_pixel_values(p1);
+
+    vector<vector<Pixel>> p2 = process_2(tiny, 0.3);
+    cout << "Process 2 Values:" << endl;
+    print_pixel_values(p2);
+    
+    vector<vector<Pixel>> p3 = process_3(tiny);
+    cout << "Process 3 Values:" << endl;
+    print_pixel_values(p3);
+    
+    vector<vector<Pixel>> p4 = process_4(tiny);
+    cout << "Process 4 Values:" << endl;
+    print_pixel_values(p4);
+    
+    vector<vector<Pixel>> p5 = process_5(tiny, 2);
+    cout << "Process 5 Values:" << endl;
+    print_pixel_values(p5);
+    
+    vector<vector<Pixel>> p6 = process_6(tiny, 2, 3);
+    cout << "Process 6 Values:" << endl;
+    print_pixel_values(p6);
+    
+    vector<vector<Pixel>> p7 = process_7(tiny);
+    cout << "Process 7 Values:" << endl;
+    print_pixel_values(p7);
+    
+    vector<vector<Pixel>> p8 = process_8(tiny, 0.5);
+    cout << "Process 8 Values:" << endl;
+    print_pixel_values(p8);
+    
+    vector<vector<Pixel>> p9 = process_9(tiny, 0.5);
+    cout << "Process 9 Values:" << endl;
+    print_pixel_values(p9);
+    
+    vector<vector<Pixel>> p10 = process_10(tiny);
+    cout << "Process 10 Values:" << endl;
+    print_pixel_values(p10);
+}
+
 
 /**
  * Print user menu for image processing application
@@ -484,8 +740,8 @@ void execute_selection(string* in_filename, int selection) {
     } 
     else if (selection >= 1 && selection <= PROCESS_COUNT) 
     {
-        vector<vector<Pixel>> modified;
         vector<vector<Pixel>> original;
+        vector<vector<Pixel>> modified;
         try 
         {
             original = read_image(*in_filename);
@@ -611,6 +867,8 @@ void run_program() {
 
 int main()
 {
+    // test();
+
     run_program();
 
     return 0;
