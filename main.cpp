@@ -8,13 +8,15 @@ PLEASE FILL OUT THIS SECTION PRIOR TO SUBMISSION
     Derek Watson
 
 - All project requirements fully met? (YES or NO):
-    NO
+    YES
 
 - If no, please explain what you could not get to work:
-    <ANSWER>
+    N/A
 
 - Did you do any optional enhancements? If so, please explain:
-    <ANSWER>
+    No, but I did create a few functions to test my outputs. One to write all images
+    to visually test the outputs and another using the "tiny" vector discussed on moodle.
+    Those funtion calls are commented out in main.
 */
 
 #include <iostream>
@@ -610,17 +612,18 @@ vector<vector<Pixel>> process_10(const vector<vector<Pixel>>& image) {
  * @return None
  */
 void print_pixel_values(const vector<vector<Pixel>>& image ) {
+    // Print all pixel values in a 2D vector of pixels
     for (int row = 0; row < image.size(); row++)
     {
         for (int col = 0; col < image[0].size(); col++)
         {
-            cout << setw(3) << image[row][col].red << " ";
-            cout << setw(3) << image[row][col].green << " ";
-            cout << setw(3) << image[row][col].blue << " ";
+            std::cout << setw(3) << image[row][col].red << " ";
+            std::cout << setw(3) << image[row][col].green << " ";
+            std::cout << setw(3) << image[row][col].blue << " ";
         }
-        cout << endl;
+        std::cout << endl;
     }
-    cout << endl;
+    std::cout << endl;
 }
 
 
@@ -628,7 +631,8 @@ void print_pixel_values(const vector<vector<Pixel>>& image ) {
  * Test each process on tiny "image", printing resulting values
  * @return None
  */
-void test() {
+void tiny_test() {
+    // Create tiny image 2d vector of pixels
     vector<vector<Pixel>> tiny =
     {
         {{  0,  5, 10},{ 15, 20, 25},{ 30, 35, 40},{ 45, 50, 55}},
@@ -636,45 +640,102 @@ void test() {
         {{120,125,130},{135,140,145},{150,155,160},{165,170,175}}
     };
 
+    // Print output after applying each process
     vector<vector<Pixel>> p1 = process_1(tiny);
-    cout << "Process 1 Values:" << endl;
+    std::cout << "Process 1 Values:" << endl;
     print_pixel_values(p1);
 
     vector<vector<Pixel>> p2 = process_2(tiny, 0.3);
-    cout << "Process 2 Values:" << endl;
+    std::cout << "Process 2 Values:" << endl;
     print_pixel_values(p2);
     
     vector<vector<Pixel>> p3 = process_3(tiny);
-    cout << "Process 3 Values:" << endl;
+    std::cout << "Process 3 Values:" << endl;
     print_pixel_values(p3);
     
     vector<vector<Pixel>> p4 = process_4(tiny);
-    cout << "Process 4 Values:" << endl;
+    std::cout << "Process 4 Values:" << endl;
     print_pixel_values(p4);
     
     vector<vector<Pixel>> p5 = process_5(tiny, 2);
-    cout << "Process 5 Values:" << endl;
+    std::cout << "Process 5 Values:" << endl;
     print_pixel_values(p5);
     
     vector<vector<Pixel>> p6 = process_6(tiny, 2, 3);
-    cout << "Process 6 Values:" << endl;
+    std::cout << "Process 6 Values:" << endl;
     print_pixel_values(p6);
     
     vector<vector<Pixel>> p7 = process_7(tiny);
-    cout << "Process 7 Values:" << endl;
+    std::cout << "Process 7 Values:" << endl;
     print_pixel_values(p7);
     
     vector<vector<Pixel>> p8 = process_8(tiny, 0.5);
-    cout << "Process 8 Values:" << endl;
+    std::cout << "Process 8 Values:" << endl;
     print_pixel_values(p8);
     
     vector<vector<Pixel>> p9 = process_9(tiny, 0.5);
-    cout << "Process 9 Values:" << endl;
+    std::cout << "Process 9 Values:" << endl;
     print_pixel_values(p9);
     
     vector<vector<Pixel>> p10 = process_10(tiny);
-    cout << "Process 10 Values:" << endl;
+    std::cout << "Process 10 Values:" << endl;
     print_pixel_values(p10);
+}
+
+
+/**
+ * Run all processes on sample.bmp to visualize results
+ * @return None
+ */
+void write_all_proceses() {
+    vector<vector<Pixel>> original;
+    // Try to read sample.bmp, abort upon error
+    try 
+    {
+        original = read_image("sample.bmp");
+        if (original.empty()) 
+        {
+            throw -1;
+        }
+    }
+    catch (...)
+    {
+        std::cout << "No sample.bmp or error with sample.bmp." << endl;
+        return;
+    }
+    
+    // Run every process on sample.bmp, outputting each result to different file
+    vector<vector<Pixel>> p1 = process_1(original);
+    write_image("p1.bmp", p1);
+
+    vector<vector<Pixel>> p2 = process_2(original, 0.3);
+    write_image("p2.bmp", p2);
+
+    vector<vector<Pixel>> p3 = process_3(original);
+    write_image("p3.bmp", p3);
+
+    vector<vector<Pixel>> p4 = process_4(original);
+    write_image("p4.bmp", p4);
+
+    vector<vector<Pixel>> p5 = process_5(original, 2);
+    write_image("p5.bmp", p5);
+
+    vector<vector<Pixel>> p6 = process_6(original, 2, 3);
+    write_image("p6.bmp", p6);
+
+    vector<vector<Pixel>> p7 = process_7(original);
+    write_image("p7.bmp", p7);
+
+    vector<vector<Pixel>> p8 = process_8(original, 0.5);
+    write_image("p8.bmp", p8);
+
+    vector<vector<Pixel>> p9 = process_9(original, 0.5);
+    write_image("p9.bmp", p9);
+
+    vector<vector<Pixel>> p10 = process_10(original);
+    write_image("p10.bmp", p10);
+
+    return;
 }
 
 
@@ -684,17 +745,21 @@ void test() {
  * @return None
  */
 void print_menu(string in_filename) {
+    // Pring menu title and option 0
     int menu_num = 0;
-    cout << endl << "IMAGE PROCESSING MENU" << endl
+    std::cout << endl << "IMAGE PROCESSING MENU" << endl
         << menu_num << ") Change image (current: " << in_filename << ")" << endl;
 
+    // Loop through processes, printing menu option for each
     for (const string &PROCESS : PROCESSES) {
         menu_num++;
-        cout << menu_num << ") " << PROCESS << endl;
+        std::cout << menu_num << ") " << PROCESS << endl;
     }
     
-    cout << endl << "Enter menu selection (Q to quit): ";
+    std::cout << endl << "Enter menu selection (Q to quit): ";
 }
+
+
 /**
  * Convert selection from string to int, handle input errors
  * @param selection User selected menu number as string
@@ -703,11 +768,13 @@ void print_menu(string in_filename) {
 int convert_selection(string selection) {
     int selection_int;
 
+    // If user enters q, return -1 to indicate quitting program
     if (selection == "Q" || selection == "q")
     {
         return -1;
     }
 
+    // Try to convert selection to int, if conversion fails, set selection as out of bounds int
     try
     {
         selection_int = stoi(selection);
@@ -723,25 +790,29 @@ int convert_selection(string selection) {
 
 
 /**
- * Print user menu for image processing application
- * @param filename Current BMP file to work on
+ * Execute user selection for menu
+ * @param filename Reference to current input filename
+ * @param selection integer reflection user menu selection
  * @return None
  */
 void execute_selection(string* in_filename, int selection) {
     string out_filename;
 
+    // Handle change file
     if (selection == 0) 
     {
-        cout << "Change image selected" << endl;
-        cout << "Enter new input BMP filename" << endl;
-        cin >> *in_filename;
-        cout << "Sucessfully changed input image!" << endl;
+        std::cout << "Change image selected" << endl;
+        std::cout << "Enter new input BMP filename: ";
+        std::cin >> *in_filename;
+        std::cout << endl << "Sucessfully changed input image!" << endl;
         return;
     } 
+    // If selection is inbounds, attempt to process image with specified effect
     else if (selection >= 1 && selection <= PROCESS_COUNT) 
     {
         vector<vector<Pixel>> original;
         vector<vector<Pixel>> modified;
+        // Try to read current input file, print error and send back to menu if fails
         try 
         {
             original = read_image(*in_filename);
@@ -752,17 +823,17 @@ void execute_selection(string* in_filename, int selection) {
         }
         catch (...) 
         {
-            cout << endl << "Error with input image, please choose a different file and try again." << endl;
+            std::cout << endl << "Error with input image, please choose a different file and try again." << endl;
             return;
         }
 
-
-        cout << PROCESSES[selection - 1] << " selected" << endl
+        // Get output filename from user
+        std::cout << PROCESSES[selection - 1] << " selected" << endl
              << "Enter output BMP filename: ";
-        cin >> out_filename;
+        std::cin >> out_filename;
 
 
-
+        // Use switch to apply correct effect based on selection
         double scaling_factor;
         switch(selection) 
         {
@@ -770,8 +841,8 @@ void execute_selection(string* in_filename, int selection) {
                 modified = process_1(original);
                 break;
             case 2:
-                cout << "Enter scaling factor: ";
-                cin >> scaling_factor;
+                std::cout << "Enter scaling factor: ";
+                std::cin >> scaling_factor;
                 modified = process_2(original, scaling_factor);
                 break;
             case 3:
@@ -782,29 +853,29 @@ void execute_selection(string* in_filename, int selection) {
                 break;
             case 5:
                 int rotations;
-                cout << "Enter number of 90 degree rotations: ";
-                cin >> rotations;
+                std::cout << "Enter number of 90 degree rotations: ";
+                std::cin >> rotations;
                 modified = process_5(original, rotations);
                 break;
             case 6:
                 int x_scale, y_scale;
-                cout << "Enter X scale: ";
-                cin >> x_scale;
-                cout << "Enter Y scale: ";
-                cin >> y_scale;
+                std::cout << "Enter X scale: ";
+                std::cin >> x_scale;
+                std::cout << "Enter Y scale: ";
+                std::cin >> y_scale;
                 modified = process_6(original, x_scale, y_scale);
                 break;
             case 7:
                 modified = process_7(original);
                 break;
             case 8:
-                cout << "Enter scaling factor: ";
-                cin >> scaling_factor;
+                std::cout << "Enter scaling factor: ";
+                std::cin >> scaling_factor;
                 modified = process_8(original, scaling_factor);
                 break;
             case 9:
-                cout << "Enter scaling factor: ";
-                cin >> scaling_factor;
+                std::cout << "Enter scaling factor: ";
+                std::cin >> scaling_factor;
                 modified = process_9(original, scaling_factor);
                 break;
             case 10:
@@ -812,6 +883,7 @@ void execute_selection(string* in_filename, int selection) {
                 break;
         } 
 
+        // Attempt to write image based on outputted 2D vector, notify user of success or failure
         try 
         {
             bool success = write_image(out_filename, modified);
@@ -822,41 +894,53 @@ void execute_selection(string* in_filename, int selection) {
         }
         catch (...) 
         {
-            cout << endl << "Error processing image, check output file and try again." << endl;
+            std::cout << endl << "Error processing image, check output file and try again." << endl;
             return;
         }
-        cout << "Successfully applied " << "\"" << PROCESSES[selection - 1] << "\"" << " effect to image!" << endl << endl;
+        std::cout << "Successfully applied " << "\"" << PROCESSES[selection - 1] << "\"" << " effect to image!" << endl << endl;
         return;    
     }
+    // If entry is out of bounds, notify user and kick back to menu
     else 
     {
-        cout << "Invalid entry, please try again." << endl;
+        std::cout << "Invalid entry, please try again." << endl;
         return;
     }
 }
 
+
 void run_program() {
-    cout << "CSPB 1300 Image Processing Application" << endl;
+    // Print title
+    std::cout << "CSPB 1300 Image Processing Application" << endl;
     
+    // Get initial input filename from user
     string in_filename;
-    cout << "Enter input BMP filename: ";
-    cin >> in_filename;
-    cout << endl;
+    std::cout << "Enter input BMP filename: ";
+    std::cin >> in_filename;
+    std::cout << endl;
 
-
+    // Print menu initially
     print_menu(in_filename);
+
+    // Prompt user for selection until quit
     string selection;
     bool done = false;
     while (!done)
     {
-        cin >> selection;
+        // Get selection
+        std::cin >> selection;
+        
+        // Convert selection from string to int
         int selection_int = convert_selection(selection);
-        if (selection_int < 0)
+        
+        // If selection is converted to -1 user pressed Q
+        if (selection_int == -1)
         {
-            cout << "Thank you for using my program!" << endl
+            std::cout << "Thank you for using my program!" << endl
                  << "Quitting..." << endl << endl;
             done = true;
         }
+        // Otherwise execute selection, print menu after execution
         else
         {
             execute_selection(&in_filename, selection_int);
@@ -867,8 +951,10 @@ void run_program() {
 
 int main()
 {
+    // Functions to help test process output, uncomment and recompile to run
     // test();
-
+    // write_all_proceses();
+    
     run_program();
 
     return 0;
